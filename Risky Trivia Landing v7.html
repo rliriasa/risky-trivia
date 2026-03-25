@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risky Trivia</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #12101f; --deep: #0e0c1a; --card: #1a1730; --card2: #1f1c35;
+    --border: rgba(240,120,140,0.12); --border2: rgba(240,120,140,0.22);
+    --coral: #f07888; --coral-dim: #d45f70; --white: #f0ede6;
+    --muted: rgba(240,237,230,0.45);
+    --font-display: 'Bebas Neue', sans-serif; --font-body: 'DM Sans', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: var(--font-body); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: rgba(18,16,31,0.95); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: 0.06em; color: var(--white); text-shadow: 0 0 18px rgba(240,120,136,0.5); }
+  .nav-logo span { color: var(--coral); }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--white); }
+  .nav-hide-mobile { display: inline; }
+  .nav-cta { background: var(--coral); color: #12101f !important; padding: 0.5rem 1.1rem; border-radius: 6px; font-weight: 700 !important; font-size: 0.82rem !important; }
+  .nav-cta:hover { background: var(--coral-dim) !important; }
+
+  .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 1.5rem 4rem; position: relative; overflow: hidden; }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(240,120,136,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(240,120,136,0.05) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%); }
+  .hero-glow { position: absolute; width: 700px; height: 400px; background: radial-gradient(ellipse, rgba(240,120,136,0.14) 0%, transparent 70%); top: 20%; left: 50%; transform: translateX(-50%); pointer-events: none; }
+  .hero-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral); margin-bottom: 1rem; opacity: 0; animation: fadeUp 0.6s 0.2s forwards; }
+  .hero h1 { font-family: var(--font-display); font-size: clamp(4rem, 18vw, 10rem); line-height: 0.92; letter-spacing: 0.02em; margin-bottom: 0.3rem; opacity: 0; animation: fadeUp 0.7s 0.35s forwards; text-shadow: 0 0 40px rgba(240,120,136,0.25); }
+  .hero h1 .line2 { color: var(--coral); display: block; text-shadow: 0 0 50px rgba(240,120,136,0.5), 0 2px 0 #8a3545; }
+  .hero-sub { font-size: clamp(0.95rem, 3.5vw, 1.25rem); color: var(--muted); max-width: 560px; margin: 1.5rem auto 2.2rem; font-weight: 300; opacity: 0; animation: fadeUp 0.7s 0.5s forwards; }
+  .hero-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.7s 0.65s forwards; }
+  .btn-primary { background: var(--coral); color: #12101f; padding: 0.85rem 1.8rem; border-radius: 6px; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.04em; text-decoration: none; text-transform: uppercase; transition: background 0.2s, transform 0.15s; display: inline-block; box-shadow: 0 0 24px rgba(240,120,136,0.35); }
+  .btn-primary:hover { background: var(--coral-dim); transform: translateY(-2px); }
+  .btn-secondary { border: 1px solid var(--border2); color: var(--white); padding: 0.85rem 1.8rem; border-radius: 6px; font-weight: 500; font-size: 0.9rem; letter-spacing: 0.04em; text-decoration: none; text-transform: uppercase; transition: border-color 0.2s, transform 0.15s; display: inline-block; }
+  .btn-secondary:hover { border-color: var(--coral); transform: translateY(-2px); }
+  .hero-stats { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 4rem; opacity: 0; animation: fadeUp 0.7s 0.85s forwards; }
+  .stat { text-align: center; }
+  .stat-num { font-family: var(--font-display); font-size: 2.8rem; color: var(--coral); line-height: 1; display: block; text-shadow: 0 0 20px rgba(240,120,136,0.4); }
+  .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.3rem; }
+
+  .ticker { background: var(--coral); color: #12101f; padding: 0.65rem 0; overflow: hidden; white-space: nowrap; }
+  .ticker-inner { display: inline-flex; gap: 3rem; animation: ticker 18s linear infinite; }
+  .ticker-inner span { font-family: var(--font-display); font-size: 1rem; letter-spacing: 0.08em; }
+  .ticker-inner .dot { opacity: 0.4; }
+
+  section { padding: 5rem 1.5rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--coral); margin-bottom: 0.8rem; }
+  .section-title { font-family: var(--font-display); font-size: clamp(2.4rem, 8vw, 4.5rem); line-height: 1; margin-bottom: 1.2rem; letter-spacing: 0.02em; }
+  .section-body { color: var(--muted); font-size: 1rem; font-weight: 300; max-width: 580px; }
+
+  .steps-wrap { margin-top: 3rem; }
+  .steps-row { display: grid; gap: 1rem; margin-bottom: 1rem; }
+  .steps-row.row-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .steps-row.row-2 { grid-template-columns: 1fr 1fr; margin-bottom: 0; }
+  .step { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.6rem 1.4rem; transition: border-color 0.2s, transform 0.2s; }
+  .step:hover { border-color: var(--border2); transform: translateY(-4px); }
+  .step-num { font-family: var(--font-display); font-size: 3.5rem; color: rgba(240,120,136,0.18); line-height: 1; margin-bottom: 0.8rem; }
+  .step h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .step p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+  .step-tag { display: inline-block; margin-top: 0.8rem; background: rgba(240,120,136,0.15); color: var(--coral); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 3px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+
+  .audience-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+  .audience-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem 1.6rem; position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
+  .audience-card:hover { transform: translateY(-3px); }
+  .audience-card.coral-card { border-color: rgba(240,120,136,0.35); }
+  .audience-card.coral-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--coral); box-shadow: 0 0 16px rgba(240,120,136,0.6); }
+  .audience-card.dim-card { border-color: rgba(240,120,136,0.18); }
+  .audience-card.dim-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: rgba(240,120,136,0.4); }
+  .card-headline { font-family: var(--font-display); font-size: 1.8rem; letter-spacing: 0.03em; margin-bottom: 0.4rem; line-height: 1.1; }
+  .card-subline { color: var(--coral); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 1rem; }
+  .audience-card .tagline { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.2rem; line-height: 1.6; font-style: italic; }
+  .benefit-list { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  .benefit-list li { font-size: 0.88rem; color: var(--muted); display: flex; align-items: flex-start; gap: 0.6rem; }
+  .benefit-list li::before { content: '→'; color: var(--coral); font-weight: 700; flex-shrink: 0; margin-top: 0.05rem; }
+
+  .games-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-top: 3rem; }
+  .game-card { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1rem; text-align: center; transition: border-color 0.2s, transform 0.2s; }
+  .game-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .game-emoji { font-size: 1.8rem; display: block; margin-bottom: 0.8rem; }
+  .game-card h4 { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .game-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+  .score-table { width: 100%; border-collapse: collapse; margin-top: 2rem; font-size: 0.92rem; }
+  .score-table th { text-align: left; padding: 0.8rem 1rem; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .score-table td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .score-table tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 3px; font-size: 0.78rem; font-weight: 600; }
+  .badge-green { background: rgba(80,200,100,0.12); color: #5ecb72; }
+  .badge-red { background: rgba(240,120,136,0.15); color: #f07888; }
+  .badge-gray { background: rgba(255,255,255,0.07); color: var(--muted); }
+
+  .cta-section { background: var(--deep); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: center; padding: 6rem 1.5rem; position: relative; overflow: hidden; }
+  .cta-glow { position: absolute; width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(240,120,136,0.12) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  .cta-section h2 { font-family: var(--font-display); font-size: clamp(2.8rem, 10vw, 6rem); line-height: 0.95; margin-bottom: 1.2rem; letter-spacing: 0.02em; }
+  .cta-section h2 em { color: var(--coral); font-style: normal; display: block; text-shadow: 0 0 40px rgba(240,120,136,0.4); }
+  .cta-section p { color: var(--muted); font-size: 1rem; max-width: 480px; margin: 0 auto 2rem; font-weight: 300; }
+  .email-form { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; max-width: 480px; margin: 0 auto; }
+  .email-form input { flex: 1; min-width: 200px; background: rgba(240,120,136,0.06); border: 1px solid var(--border2); border-radius: 6px; padding: 0.85rem 1.2rem; color: var(--white); font-family: var(--font-body); font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+  .email-form input:focus { border-color: var(--coral); }
+  .email-form input::placeholder { color: var(--muted); }
+  .email-form button { background: var(--coral); color: #12101f; border: none; border-radius: 6px; padding: 0.85rem 1.8rem; font-family: var(--font-body); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; box-shadow: 0 0 20px rgba(240,120,136,0.3); }
+  .email-form button:hover { background: var(--coral-dim); }
+
+  footer { padding: 2.5rem 1.5rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .footer-logo { font-family: var(--font-display); font-size: 1.3rem; color: var(--white); text-shadow: 0 0 14px rgba(240,120,136,0.4); }
+  .footer-logo span { color: var(--coral); }
+  footer p { font-size: 0.8rem; color: var(--muted); }
+  .footer-links { display: flex; gap: 1.2rem; }
+  .footer-links a { font-size: 0.8rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--coral); }
+
+  /* REVEAL — visible by default, animates in when JS fires */
+  .reveal { opacity: 1; transform: none; }
+  .reveal.will-animate { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.will-animate.revealed { opacity: 1; transform: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .nav-hide-mobile { display: none; }
+    nav { padding: 1rem 1.2rem; }
+    .hero { padding: 7rem 1.2rem 3.5rem; }
+    .hero-stats { gap: 1.2rem; margin-top: 3rem; }
+    .hero-stats .stat { min-width: 40%; }
+    .stat-num { font-size: 2.4rem; }
+    .hero-actions { flex-direction: column; align-items: center; }
+    .btn-primary, .btn-secondary { width: 100%; max-width: 320px; text-align: center; }
+    .steps-row.row-3 { grid-template-columns: 1fr; }
+    .steps-row.row-2 { grid-template-columns: 1fr; }
+    .audience-grid { grid-template-columns: 1fr; }
+    .games-grid { grid-template-columns: 1fr 1fr; }
+    .game-card:last-child { grid-column: 1 / -1; max-width: 50%; margin: 0 auto; width: 100%; }
+    .two-col { grid-template-columns: 1fr; gap: 2rem; }
+    .email-form { flex-direction: column; align-items: stretch; }
+    .email-form input { min-width: unset; width: 100%; }
+    .email-form button { width: 100%; }
+    footer { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    section { padding: 4rem 1.2rem; }
+  }
+  @media (max-width: 480px) {
+    .card-headline { font-size: 1.6rem; }
+    .section-title { font-size: clamp(2rem, 10vw, 3rem); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">RISKY <span>TRIVIA</span></div>
+  <div class="nav-links">
+    <a href="#venues" class="nav-hide-mobile">For Venues</a>
+    <a href="#players" class="nav-hide-mobile">For Players</a>
+    <a href="#games" class="nav-hide-mobile">Mini-Games</a>
+    <a href="#contact" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <p class="hero-eyebrow">The trivia night everyone's talking about.</p>
+  <h1>PLAY<span class="line2">TOGETHER.</span></h1>
+  <p class="hero-sub">Live trivia that turns any bar or restaurant into a game show. Just a PIN and a phone.</p>
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Book your first night →</a>
+    <a href="#players" class="btn-secondary">Join a game</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">30+</span><span class="stat-label">Players per night</span></div>
+    <div class="stat"><span class="stat-num">90</span><span class="stat-label">Minutes of chaos</span></div>
+    <div class="stat"><span class="stat-num">5</span><span class="stat-label">Mini-games</span></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Apps to install</span></div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>HORSE RACE</span><span class="dot">✦</span><span>ROCKET RIDE</span><span class="dot">✦</span><span>ROULETTE</span><span class="dot">✦</span><span>BASEBALL</span><span class="dot">✦</span><span>ROCK PAPER SCISSORS</span><span class="dot">✦</span><span>LIVE LEADERBOARD</span><span class="dot">✦</span><span>HORSE RACE</span><span class="dot">✦</span><span>ROCKET RIDE</span><span class="dot">✦</span><span>ROULETTE</span><span class="dot">✦</span><span>BASEBALL</span><span class="dot">✦</span><span>ROCK PAPER SCISSORS</span><span class="dot">✦</span><span>LIVE LEADERBOARD</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<section id="how">
+  <div class="container">
+    <p class="section-label reveal">How it works</p>
+    <h2 class="section-title reveal">Show up.<br>Play hard.<br>Win big.</h2>
+    <p class="section-body reveal">The host runs everything from a laptop. Players join on their phones. The TV shows the action. The bar fills up.</p>
+    <div class="steps-wrap">
+      <div class="steps-row row-3">
+        <div class="step reveal"><div class="step-num">01</div><h3>Venue sets up</h3><p>Open the host dashboard on any laptop. Connect it to the TV. You're live in under two minutes.</p></div>
+        <div class="step reveal"><div class="step-num">02</div><h3>Players join</h3><p>Scan a QR code or type a 6-digit PIN. Pick a team name. That's it.</p></div>
+        <div class="step reveal"><div class="step-num">03</div><h3>Game begins</h3><p>Questions hit the TV. Answers go through phones. The whole room plays at once, live.</p></div>
+      </div>
+      <div class="steps-row row-2">
+        <div class="step reveal">
+          <div class="step-num">04</div>
+          <h3>Mini-games take over</h3>
+          <p>Every 5 questions, the trivia pauses and something chaotic happens. Bets. Horses. Rockets. Roulette. Oh, and there's a 10-minute halftime — perfect time to grab another round.</p>
+          <span class="step-tag">🍺 Bar rush built in</span>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">05</div>
+          <h3>Podium moment</h3>
+          <p>Final leaderboard. Confetti. The winners get crowned — and walk away with free drinks, a prize, or whatever the venue puts up. Losers start planning their comeback.</p>
+          <span class="step-tag">🏆 Real prizes. Real glory.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="venues">
+  <div class="container">
+    <p class="section-label reveal">Who it's for</p>
+    <h2 class="section-title reveal">Everyone<br>wins tonight.</h2>
+    <div class="audience-grid reveal">
+      <div class="audience-card coral-card">
+        <div class="card-headline">Your bar.<br>Their reason to stay.</div>
+        <div class="card-subline">For venues</div>
+        <p class="tagline">"They came for one drink. They stayed for three hours. Same time next week?"</p>
+        <ul class="benefit-list">
+          <li>A built-in halftime drives a second bar rush mid-game</li>
+          <li>Winners get prizes you set — free drinks, tabs, vouchers</li>
+          <li>Weekly format keeps regulars coming back</li>
+          <li>No hardware, no installation, no hassle</li>
+          <li>Your logo and branding on the display all night</li>
+          <li>Full analytics on who's playing and how long they stay</li>
+        </ul>
+      </div>
+      <div class="audience-card dim-card" id="players">
+        <div class="card-headline">Who's the<br>smartest in the room?</div>
+        <div class="card-subline">For players</div>
+        <p class="tagline">"Trivia, luck, and chaos — all in one night. Anyone can win. Nobody is safe."</p>
+        <ul class="benefit-list">
+          <li>Prove you're the smartest person at the bar</li>
+          <li>Or just get lucky on the roulette — both work</li>
+          <li>Easy to play from your phone, no setup needed</li>
+          <li>Mini-games can flip the leaderboard at any moment</li>
+          <li>Team up with friends or go solo</li>
+          <li>Win real prizes — free drinks, bar tabs, and more</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="games" style="background: var(--deep); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="container">
+    <p class="section-label reveal">Mini-games</p>
+    <h2 class="section-title reveal">Where the<br>real chaos lives.</h2>
+    <p class="section-body reveal">Every 5 questions, the trivia pauses and a mini-game takes over. High risk. High reward. Total mayhem.</p>
+    <div class="games-grid reveal">
+      <div class="game-card"><span class="game-emoji">🐎</span><h4>Horse Race</h4><p>Pick your horse. 1st place wins 700 pts. Last place gets pity.</p></div>
+      <div class="game-card"><span class="game-emoji">🚀</span><h4>Rocket Ride</h4><p>Cash out before it explodes. Wait too long — you get nothing.</p></div>
+      <div class="game-card"><span class="game-emoji">🎰</span><h4>Roulette</h4><p>3 rounds of betting. Hit the number: 700 pts. Green? 1000.</p></div>
+      <div class="game-card"><span class="game-emoji">⚾</span><h4>Baseball</h4><p>Two captains face off. Everyone else bets on the outcome.</p></div>
+      <div class="game-card"><span class="game-emoji">✊</span><h4>Rock Paper Scissors</h4><p>Last place challenges up. Beat them all for glory.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="two-col">
+      <div>
+        <p class="section-label reveal">Scoring</p>
+        <h2 class="section-title reveal">Fast answers<br>mean more points.</h2>
+        <p class="section-body reveal">Speed matters. Leaders get punished harder for wrong answers. Last place always has a path back. Every question is a gamble.</p>
+      </div>
+      <div class="reveal">
+        <table class="score-table">
+          <thead><tr><th>Outcome</th><th>Points</th></tr></thead>
+          <tbody>
+            <tr><td>Correct answer</td><td><span class="badge badge-green">+200 to +300</span><br><span style="font-size:0.8rem;color:var(--muted);display:block;margin-top:4px">Faster = more</span></td></tr>
+            <tr><td>Wrong answer</td><td><span class="badge badge-red">−100 to −200</span><br><span style="font-size:0.8rem;color:var(--muted);display:block;margin-top:4px">Leaders penalised harder</span></td></tr>
+            <tr><td>Skip (skips remain)</td><td><span class="badge badge-gray">0 pts</span><br><span style="font-size:0.8rem;color:var(--muted);display:block;margin-top:4px">3 skips per game</span></td></tr>
+            <tr><td>Skip (none left)</td><td><span class="badge badge-red">−100 to −200</span><br><span style="font-size:0.8rem;color:var(--muted);display:block;margin-top:4px">Same as wrong answer</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contact">
+  <div class="cta-glow"></div>
+  <div style="position:relative;z-index:1;">
+    <h2>YOUR VENUE.<br><em>THEIR NIGHT OUT.</em></h2>
+    <p>Leave your email and we'll reach out to set up your first Risky Trivia night — free.</p>
+    <div class="email-form">
+      <input type="email" placeholder="your@venue.com" />
+      <button type="button">Let's talk →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">RISKY <span>TRIVIA</span></div>
+  <p>© 2025 Risky Trivia. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="#">Venues</a><a href="#">Players</a><a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+// Only animate if IntersectionObserver is well-supported and not on a slow connection
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (!prefersReduced && 'IntersectionObserver' in window) {
+  const reveals = document.querySelectorAll('.reveal');
+  // Mark them for animation now that JS is confirmed working
+  reveals.forEach(el => el.classList.add('will-animate'));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+}
+</script>
+</body>
+</html>
